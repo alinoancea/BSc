@@ -1,0 +1,14 @@
+[
+    {
+        "name": "VM1_name",
+        "snapshot": "snapshot_name",
+        "username": "username",
+        "password": "password",
+        "sample": "path_to_sample"
+    },
+    {
+        "name": "VM2_name",
+        "username": "username",
+        "password": "password"
+    }
+]
