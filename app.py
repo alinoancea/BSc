@@ -39,13 +39,14 @@ if __name__ == '__main__':
 
                 for e in config_file:
                     if 'name' not in e and not args.vm_name:
-                        print('[!] Missing VM name from:\n%s' % (json.dumps(e, indent=4),))
+                        print('[!] Missing VM name from:\n%s' % (json.dumps(e, indent=4),), file=sys.stderr)
                         continue
                     if ('username' not in e or 'password' not in e) and not (args.username and args.password):
-                        print('[!] Missing username/password from:\n%s' % (json.dumps(e, indent=4),))
+                        print('[!] Missing username/password from:\n%s' % (json.dumps(e, indent=4),), 
+                                file=sys.stderr)
                         continue
                     if 'sample' not in e and not args.sample:
-                        print('[!] Missing sample from:\n%s' % (json.dumps(e, indent=4),))
+                        print('[!] Missing sample from:\n%s' % (json.dumps(e, indent=4),), file=sys.stderr)
                         continue
 
                     vms.append({
@@ -56,10 +57,11 @@ if __name__ == '__main__':
                         'snapshot': e.get('snapshot') or args.snapshot
                     })
             except Exception as e:
-                print('[!] [%s] is not a valid JSON file!\nERROR: %s' % (args.config, str(e)))
+                print('[!] [%s] is not a valid JSON file!\nERROR: %s' % (args.config, str(e)), 
+                        file=sys.stderr)
                 sys.exit(-1)
         else:
-            print('[!] [%s] is not a valid path!' % (args.config,))
+            print('[!] [%s] is not a valid path!' % (args.config,), file=sys.stderr)
             sys.exit(-1)
     else:
         vms.append({
