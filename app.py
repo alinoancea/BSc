@@ -17,12 +17,15 @@ def is_valid_path(parser, argument):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', help='set configuration file with VMs')
-parser.add_argument('-vm', '--vm_name', help='set VM name', required='--config' not in sys.argv)
+parser.add_argument('-vm', '--vm_name', help='set VM name', 
+        required='--config' not in sys.argv and '-c' not in sys.argv)
 parser.add_argument('-ss', '--snapshot', help='set which snapshot to revert')
-parser.add_argument('-u', '--username', help='set username for VM', required='--config' not in sys.argv)
-parser.add_argument('-p', '--password', help='set password for VM', required='--config' not in sys.argv)
+parser.add_argument('-u', '--username', help='set username for VM',
+        required='--config' not in sys.argv and '-c' not in sys.argv)
+parser.add_argument('-p', '--password', help='set password for VM',
+        required='--config' not in sys.argv and '-c' not in sys.argv)
 parser.add_argument('-s', '--sample', help='set which sample to deploy on VM',
-        required='--config' not in sys.argv, type=lambda x: is_valid_path(parser, x))
+        required='--config' not in sys.argv and '-c' not in sys.argv, type=lambda x: is_valid_path(parser, x))
 
 
 if __name__ == '__main__':
