@@ -55,6 +55,10 @@ class VBoxMachine:
         self.console_session = self.session.console
         self.guest_session = self.console_session.guest.create_session(self.username, self.password)
 
+        _, stdout, _ = self.guest_session.execute('cmd.exe', ['/c', 'set|findstr /ic:PROCESSOR_ARCHITECTURE'])
+
+        self.vm_architecture = '64' if 'AMD64' in stdout.decode().upper() else '86'
+
 
     def restore_snapshot(self):
         self.vm.lock_machine(self.session, virtualbox.library.LockType(2))
