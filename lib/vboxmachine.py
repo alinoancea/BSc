@@ -10,6 +10,8 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/..')
 
 from exception import VBoxLibException
 
+PROJECT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/..'
+
 
 
 class VBoxMachine:
