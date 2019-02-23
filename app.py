@@ -48,6 +48,9 @@ if __name__ == '__main__':
                     if 'sample' not in e and not args.sample:
                         print('[!] Missing sample from:\n%s' % (json.dumps(e, indent=4),), file=sys.stderr)
                         continue
+                    elif 'sample' in e and not os.path.isfile(e['sample']):
+                        print('[!] File [%s] does not exist!' % (e['sample'],), file=sys.stderr)
+                        continue
 
                     vms.append({
                         'name': e.get('name') or args.vm_name,
