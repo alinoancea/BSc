@@ -153,3 +153,11 @@ class VBoxMachine:
         self.execute_command('%sunzip.exe' % (tools_dir,), ['%spython.zip' % (tools_dir,), '-d', tools_dir])
 
 
+    def launch_client_app(self):
+        print('[#] Launching clientapp.py on guest...')
+        python_path = self.deploy_location + '\\tools\\python\\python.exe'
+        tools_dir = self.deploy_location + '\\tools\\'
+        self.execute_command(python_path, ['%sclientapp.py' % (tools_dir,)])
+
+
+        
