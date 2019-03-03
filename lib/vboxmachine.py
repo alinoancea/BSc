@@ -135,3 +135,15 @@ class VBoxMachine:
                     destination_file), self.file_copy(source, destination_file), show_progress=False)
 
 
+    def deploy_necessary_files(self):
+        print('[#] Copying necessary files on [%s]...' % (self.name,))
+        # create deploy directory
+        self.create_directory(self.deploy_location)
+        # copy sample
+        self.copy_on_vm(self.sample_path, self.sample_name)
+        # copy tools directory
+        self.copy_on_vm(os.path.join(PROJECT_DIR, 'tools', 'x%s' % (self.vm_architecture,)), 'tools')
+        # copy common tools files
+        self.copy_on_vm(os.path.join(PROJECT_DIR, 'tools', 'common'), 'tools')
+
+
