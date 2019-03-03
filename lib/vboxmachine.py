@@ -45,16 +45,18 @@ class VBoxMachine:
         self.session.unlock_machine()
 
 
-    def wait_for_operation(self, message, status):
-        print(message, end='', flush=True)
+    def wait_for_operation(self, message, status, show_progress=True):
+        print(message, end='' if show_progress else '\n', flush=True)
         while status.percent < 100:
-            print('.', end='', flush=True)
+            if show_progress:
+                print('%s%%..' % (status.percent,), end='', flush=True)
             time.sleep(1)
-        print('OK')
+        if show_progress:
+            print('100%')
 
 
     def launch(self):
-        self.wait_for_operation('[#] Launching machine [%s]' % (self.name,),
+        self.wait_for_operation('[#] Launching machine [%s]..' % (self.name,),
                 self.vm.launch_vm_process(self.session, self.launch_type))
 
         self.console_session = self.session.console
