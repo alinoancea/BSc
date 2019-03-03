@@ -101,3 +101,9 @@ class VBoxMachine:
 
     def create_directory(self, path, mode=700, flags=[]):
         self.guest_session.directory_create(path, mode, flags)
+
+
+    def file_copy(self, source, destination, flags=[]):
+        return self.guest_session.file_copy_to_guest(source, destination, flags)
+
+
