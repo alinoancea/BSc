@@ -28,6 +28,7 @@ class VBoxMachine:
         self.sample_path = os.path.join(PROJECT_DIR, sample) if not os.path.isabs(sample) else sample
         self.sample_name = sample_name
         self.launch_type = launch_type
+        self.deploy_location = 'C:\\maltest'
         self.guest_session = None
         self.console_session = None
 
