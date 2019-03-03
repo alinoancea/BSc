@@ -107,3 +107,11 @@ class VBoxMachine:
         return self.guest_session.file_copy_to_guest(source, destination, flags)
 
 
+    def check_existing_directory(self, directory_path):
+        try:
+            return self.guest_session.directory_exists(directory_path)
+        except Exception as e:
+            if 'No such file or directory on guest' in str(e):
+                return False
+            raise
+
