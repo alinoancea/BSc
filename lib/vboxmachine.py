@@ -17,13 +17,16 @@ PROJECT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/..'
 class VBoxMachine:
 
 
-    def __init__(self, name, snapshot, username, password, sample, launch_type='headless'):
+    def __init__(self, name, snapshot, username, password, sample, launch_type='headless',
+            sample_name='a.exe', wait_time=30):
         self.virtualbox = virtualbox.VirtualBox()
         self.session = virtualbox.Session()
 
         self.name = name
         self.username = username
         self.password = password
+        self.sample_path = os.path.join(PROJECT_DIR, sample) if not os.path.isabs(sample) else sample
+        self.sample_name = sample_name
         self.launch_type = launch_type
         self.guest_session = None
         self.console_session = None
