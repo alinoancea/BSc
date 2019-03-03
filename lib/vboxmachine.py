@@ -63,7 +63,7 @@ class VBoxMachine:
         self.console_session = self.session.console
         self.guest_session = self.console_session.guest.create_session(self.username, self.password)
 
-        _, stdout, _ = self.guest_session.execute('cmd.exe', ['/c', 'set|findstr /ic:PROCESSOR_ARCHITECTURE'])
+        _, stdout, _ = self.execute_command('set|findstr /ic:PROCESSOR_ARCHITECTURE')
 
         self.vm_architecture = '64' if 'AMD64' in stdout.decode().upper() else '86'
 
@@ -79,4 +79,22 @@ class VBoxMachine:
         self.wait_for_operation('[#] Powering off [%s]..' % (self.name,), self.console_session.power_down())
 
 
+    def execute_command(self, cmd, args=[]):
+        """Executes a command on the VM.
+
+        Args:
+            cmd (str): command to be executed on the VM
+            args (list|tuple): arguments to be given to the command
+
+        Returns:
+            process: information about the created process
+            stdout: output of the executed command
+            stderr: error messages of the executed command 
+        """
+        if not cmd or not isinstance(cmd, str):
+            raise VBoxLibException('There is no command specified or typeof(cmd) is not "str"')
+        if not isinstance(args, (list, tuple)):
+            raise VBoxLibException('args argument should be of type "list" or "tuple"')
+        args = ['/c', cmd] + args
+        return self.guest_session.execute('cmd.exe', args)
         
