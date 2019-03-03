@@ -147,3 +147,9 @@ class VBoxMachine:
         self.copy_on_vm(os.path.join(PROJECT_DIR, 'tools', 'common'), 'tools')
 
 
+    def unzip_tools(self):
+        print('[#] Unzip python...')
+        tools_dir = self.deploy_location + '\\tools\\'
+        self.execute_command('%sunzip.exe' % (tools_dir,), ['%spython.zip' % (tools_dir,), '-d', tools_dir])
+
+
