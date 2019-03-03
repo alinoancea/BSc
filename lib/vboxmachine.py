@@ -98,3 +98,6 @@ class VBoxMachine:
         args = ['/c', cmd] + args
         return self.guest_session.execute('cmd.exe', args)
         
+
+    def create_directory(self, path, mode=700, flags=[]):
+        self.guest_session.directory_create(path, mode, flags)
