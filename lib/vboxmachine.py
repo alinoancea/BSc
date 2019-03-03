@@ -115,3 +115,23 @@ class VBoxMachine:
                 return False
             raise
 
+    def copy_on_vm(self, source, destination, indent=True):
+        source = os.path.normpath(source)
+        if os.path.isdir(source):
+            if not self.check_existing_directory(self.deploy_location + '\\' + destination):
+                self.create_directory(self.deploy_location + '\\' + destination)
+            for root, _, files in os.walk(source):
+                for f in files:
+                    source_file = os.path.join(root, f)
+                    destination_file = self.deploy_location + '\\' + destination + '\\' + f
+
+                    self.wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '',
+                            source_file, destination_file), self.file_copy(os.path.join(source, f), 
+                            destination_file), show_progress=False)
+        else:
+            destination_file = self.deploy_location + '\\' + destination
+
+            self.wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '', source,
+                    destination_file), self.file_copy(source, destination_file), show_progress=False)
+
+
