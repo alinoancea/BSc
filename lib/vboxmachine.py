@@ -48,9 +48,11 @@ class VBoxMachine:
 
     def wait_for_operation(self, message, status, show_progress=True):
         print(message, end='' if show_progress else '\n', flush=True)
+        last_status = -10
         while status.percent < 100:
-            if show_progress:
+            if show_progress and status.percent - last_status > 9:
                 print('%s%%..' % (status.percent,), end='', flush=True)
+                last_status = status.percent
             time.sleep(1)
         if show_progress:
             print('100%')
