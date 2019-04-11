@@ -77,9 +77,22 @@ class PROCESS_INFORMATION(Structure):
 
 CreateProcess = windll.kernel32.CreateProcessW
 GetLastError = windll.kernel32.GetLastError
+ResumeThread = windll.kernel32.ResumeThread
 
 # END - Windows function headers
 
+# start monitoring apps
+
+#start a suspended hollows_hunter.exe and after WAIT_TIME resume it
+hh_pi = PROCESS_INFORMATION()
+hh_si = STARTUPINFO()
+hh_si.cb = sizeof(hh_si)
+# protect needed imports for hollows_hunter
+#TODO: rewrite this crap
+dll_lock = open('%s\\tools\\pe-sieve.dll' % (DEPLOY_DIR,))
+hollows_hunter_path = '%s\\tools\\hollows_hunter.exe /kill' % (DEPLOY_DIR,)
+ret = CreateProcess(None, hollows_hunter_path, None, None, None, 0x4, None, EXTRACTION_DIR, byref(hh_si),
+        byref(hh_pi))
 
 pi = PROCESS_INFORMATION()
 si = STARTUPINFO()
@@ -95,17 +108,21 @@ else:
     logger.write('Something went wrong %x!\n' % (err,))
     sys.exit(err)
 
-logger.write('[#] Dumping PID [%d] using procdump.exe\n' % (pi.dwProcessId,))
-subprocess.Popen(['%s\\tools\\procdump.exe' % (DEPLOY_DIR,), '-t', '-ma', str(pi.dwProcessId), '/AcceptEula'],
-        cwd=EXTRACTION_DIR)
+time.sleep(WAIT_TIME)
+ResumeThread(hh_pi.hThread)
+time.sleep(WAIT_TIME)
 
-#TODO: start a suspended hollows_hunter.exe and after WAIT_TIME resume it 
-subprocess.call(['%s\\tools\\hollows_hunter.exe' % (DEPLOY_DIR,), '/kill'], cwd=EXTRACTION_DIR)
+# logger.write('[#] Dumping PID [%d] using procdump.exe\n' % (pi.dwProcessId,))
+# subprocess.Popen(['%s\\tools\\procdump.exe' % (DEPLOY_DIR,), '-t', '-ma', str(pi.dwProcessId), '/AcceptEula'],
+#         cwd=EXTRACTION_DIR)
 
 # in case hollows_hunter doesn't kill the process
+subprocess.run(['taskkill', '/F', '/PID', str(pi.dwProcessId)])
+
 logger.close()
+dll_lock.close()
 
 with zipfile.ZipFile(ZIP_FN, 'a') as zip_file:
-for root, _, files in os.walk(EXTRACTION_DIR):
-    for f in files:
-        zip_file.write(os.path.join(root, f))
+    for root, _, files in os.walk(EXTRACTION_DIR):
+        for f in files:
+            zip_file.write(os.path.join(root, f))
