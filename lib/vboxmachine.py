@@ -46,7 +46,7 @@ class VBoxMachine:
         self.session.unlock_machine()
 
 
-    def wait_for_operation(self, message, status, show_progress=True):
+    def __wait_for_operation(self, message, status, show_progress=True):
         print(message, end='' if show_progress else '\n', flush=True)
         last_status = -10
         while status.percent < 100:
@@ -59,29 +59,29 @@ class VBoxMachine:
 
 
     def launch(self):
-        self.wait_for_operation('[#] Launching machine [%s]..' % (self.name,),
+        self.__wait_for_operation('[#] Launching machine [%s]..' % (self.name,),
                 self.vm.launch_vm_process(self.session, self.launch_type))
 
         self.console_session = self.session.console
         self.guest_session = self.console_session.guest.create_session(self.username, self.password)
 
-        _, stdout, _ = self.execute_command('set|findstr /ic:PROCESSOR_ARCHITECTURE')
+        _, stdout, _ = self.__execute_command('set|findstr /ic:PROCESSOR_ARCHITECTURE')
 
         self.vm_architecture = '64' if 'AMD64' in stdout.decode().upper() else '86'
 
 
     def restore_snapshot(self):
         self.vm.lock_machine(self.session, virtualbox.library.LockType(2))
-        self.wait_for_operation('[#] Restoring snapshot on [%s]..' % (self.name,),
+        self.__wait_for_operation('[#] Restoring snapshot on [%s]..' % (self.name,),
                 self.session.machine.restore_snapshot(self.snapshot))
         self.session.unlock_machine()
 
 
     def power_off(self):
-        self.wait_for_operation('[#] Powering off [%s]..' % (self.name,), self.console_session.power_down())
+        self.__wait_for_operation('[#] Powering off [%s]..' % (self.name,), self.console_session.power_down())
 
 
-    def execute_command(self, cmd, args=[]):
+    def __execute_command(self, cmd, args=[]):
         """Executes a command on the VM.
 
         Args:
@@ -101,15 +101,15 @@ class VBoxMachine:
         return self.guest_session.execute('cmd.exe', args)
         
 
-    def create_directory(self, path, mode=700, flags=[]):
+    def __create_directory(self, path, mode=700, flags=[]):
         self.guest_session.directory_create(path, mode, flags)
 
 
-    def file_copy(self, source, destination, flags=[]):
+    def __file_copy(self, source, destination, flags=[]):
         return self.guest_session.file_copy_to_guest(source, destination, flags)
 
 
-    def check_existing_directory(self, directory_path):
+    def __check_existing_directory(self, directory_path):
         try:
             return self.guest_session.directory_exists(directory_path)
         except Exception as e:
@@ -117,49 +117,52 @@ class VBoxMachine:
                 return False
             raise
 
-    def copy_on_vm(self, source, destination, indent=True):
+    def __copy_on_vm(self, source, destination, indent=True):
         source = os.path.normpath(source)
         if os.path.isdir(source):
-            if not self.check_existing_directory(self.deploy_location + '\\' + destination):
-                self.create_directory(self.deploy_location + '\\' + destination)
+            if not self.__check_existing_directory(self.deploy_location + '\\' + destination):
+                self.__create_directory(self.deploy_location + '\\' + destination)
             for root, _, files in os.walk(source):
                 for f in files:
                     source_file = os.path.join(root, f)
                     destination_file = self.deploy_location + '\\' + destination + '\\' + f
 
-                    self.wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '',
+                    self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '',
                             source_file, destination_file), self.file_copy(os.path.join(source, f), 
                             destination_file), show_progress=False)
         else:
             destination_file = self.deploy_location + '\\' + destination
 
-            self.wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '', source,
-                    destination_file), self.file_copy(source, destination_file), show_progress=False)
+            self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '', source,
+                    destination_file), self.__file_copy(source, destination_file), show_progress=False)
 
 
     def deploy_necessary_files(self):
         print('[#] Copying necessary files on [%s]...' % (self.name,))
         # create deploy directory
-        self.create_directory(self.deploy_location)
+        self.__create_directory(self.deploy_location)
         # copy sample
-        self.copy_on_vm(self.sample_path, self.sample_name)
+        self.__copy_on_vm(self.sample_path, self.sample_name)
         # copy tools directory
-        self.copy_on_vm(os.path.join(PROJECT_DIR, 'tools', 'x%s' % (self.vm_architecture,)), 'tools')
+        self.__copy_on_vm(os.path.join(PROJECT_DIR, 'tools', 'x%s' % (self.vm_architecture,)), 'tools')
         # copy common tools files
-        self.copy_on_vm(os.path.join(PROJECT_DIR, 'tools', 'common'), 'tools')
+        self.__copy_on_vm(os.path.join(PROJECT_DIR, 'tools', 'common'), 'tools')
+
+        # unziping files
+        self.__unzip_tools()
 
 
-    def unzip_tools(self):
+    def __unzip_tools(self):
         print('[#] Unzip python...')
         tools_dir = self.deploy_location + '\\tools\\'
-        self.execute_command('%sunzip.exe' % (tools_dir,), ['%spython.zip' % (tools_dir,), '-d', tools_dir])
+        self.__execute_command('%sunzip.exe' % (tools_dir,), ['%spython.zip' % (tools_dir,), '-d', tools_dir])
 
 
     def launch_client_app(self):
         print('[#] Launching clientapp.py on guest...')
         python_path = self.deploy_location + '\\tools\\python\\python.exe'
         tools_dir = self.deploy_location + '\\tools\\'
-        self.execute_command(python_path, ['%sclientapp.py' % (tools_dir,)])
+        self.__execute_command(python_path, ['%sclientapp.py' % (tools_dir,)])
 
 
         
