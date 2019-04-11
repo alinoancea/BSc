@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
-import os, time, zipfile, subprocess, sys
+import os
+import time
+import zipfile
+import subprocess
+import sys
 
 from ctypes import c_int, c_bool, c_void_p, c_long, c_short, c_ulong, c_char, c_ushort, c_ubyte
 from ctypes import windll, byref, Structure, sizeof, POINTER
