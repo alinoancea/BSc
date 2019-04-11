@@ -91,7 +91,9 @@ ret = CreateProcess(MALWARE_PATH, None, None, None, None, 0x0, None, None, byref
 if ret:
     logger.write('CreateProcess success! ID: %d\n' % (pi.dwProcessId,))
 else:
-    logger.write('Something went wrong %x!\n' % (GetLastError()))
+    err = GetLastError()
+    logger.write('Something went wrong %x!\n' % (err,))
+    sys.exit(err)
 
 logger.write('[#] Dumping PID [%d] using procdump.exe\n' % (pi.dwProcessId,))
 subprocess.Popen(['%s\\tools\\procdump.exe' % (DEPLOY_DIR,), '-t', '-ma', str(pi.dwProcessId), '/AcceptEula'],
