@@ -5,6 +5,8 @@ import os
 import json
 import sys
 
+from lib.vboxmachine import VBoxMachine
+
 # GLOBALS
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
 
@@ -75,4 +77,11 @@ if __name__ == '__main__':
             'snapshot': args.snapshot
         })
 
-    print(vms)
+    for vbox_params in vms:
+        vbx = VBoxMachine(**vbox_params)
+
+        vbx.restore_snapshot()
+        vbx.launch()
+        vbx.deploy_necessary_files()
+        vbx.launch_client_app()
+        vbx.power_off()
