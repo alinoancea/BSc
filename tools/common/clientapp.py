@@ -21,7 +21,6 @@ CLIENT_LOG_FN = os.path.join(EXTRACTION_DIR, LOG_FILE)
 
 os.makedirs(EXTRACTION_DIR)
 logger = open(CLIENT_LOG_FN, 'w')
-zip_file = zipfile.ZipFile(ZIP_FN, 'a')
 
 sys.stdout = sys.stderr = logger
 
@@ -102,10 +101,9 @@ subprocess.Popen(['%s\\tools\\procdump.exe' % (DEPLOY_DIR,), '-t', '-ma', str(pi
 subprocess.call(['%s\\tools\\hollows_hunter.exe' % (DEPLOY_DIR,), '/kill'], cwd=EXTRACTION_DIR)
 
 # in case hollows_hunter doesn't kill the process
-subprocess.call(['taskkill', '/F', '/PID', str(pi.dwProcessId)])
+logger.close()
 
+with zipfile.ZipFile(ZIP_FN, 'a') as zip_file:
 for root, _, files in os.walk(EXTRACTION_DIR):
     for f in files:
         zip_file.write(os.path.join(root, f))
-logger.close()
-zip_file.close()
