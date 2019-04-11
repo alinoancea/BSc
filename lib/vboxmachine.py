@@ -128,7 +128,7 @@ class VBoxMachine:
                     destination_file = self.deploy_location + '\\' + destination + '\\' + f
 
                     self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '',
-                            source_file, destination_file), self.file_copy(os.path.join(source, f), 
+                            source_file, destination_file), self.__file_copy(os.path.join(source, f), 
                             destination_file), show_progress=False)
         else:
             destination_file = self.deploy_location + '\\' + destination
