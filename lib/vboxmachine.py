@@ -105,8 +105,11 @@ class VBoxMachine:
         self.guest_session.directory_create(path, mode, flags)
 
 
-    def __file_copy(self, source, destination, flags=[]):
+    def __file_copy(self, source, destination, flags=[], to_guest=True):
+        if to_guest:
         return self.guest_session.file_copy_to_guest(source, destination, flags)
+        else:
+            return self.guest_session.file_copy_from_guest(source, destination, flags)
 
 
     def __check_existing_directory(self, directory_path):
@@ -136,6 +139,10 @@ class VBoxMachine:
             self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '', source,
                     destination_file), self.__file_copy(source, destination_file), show_progress=False)
 
+
+    def copy_from_vm(self, source, destination):
+        self.__wait_for_operation('[-] Extracting [%s] -> [%s]...' % (source, destination),
+                self.__file_copy(source, destination, to_guest=False), show_progress=False)
 
     def deploy_necessary_files(self):
         print('[#] Copying necessary files on [%s]...' % (self.name,))
