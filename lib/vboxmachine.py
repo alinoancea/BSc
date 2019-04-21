@@ -53,7 +53,7 @@ class VBoxMachine:
             if show_progress and status.percent - last_status > 9:
                 print('%s%%..' % (status.percent,), end='', flush=True)
                 last_status = status.percent
-            time.sleep(1)
+            time.sleep(0.5)
         if show_progress:
             print('100%')
 
@@ -107,7 +107,7 @@ class VBoxMachine:
 
     def __file_copy(self, source, destination, flags=[], to_guest=True):
         if to_guest:
-        return self.guest_session.file_copy_to_guest(source, destination, flags)
+            return self.guest_session.file_copy_to_guest(source, destination, flags)
         else:
             return self.guest_session.file_copy_from_guest(source, destination, flags)
 
