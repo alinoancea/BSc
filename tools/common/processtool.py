@@ -86,14 +86,14 @@ class ProcessCreator():
         
         Returns:
             tuple of (status, error_code)
-            status: 0 on success, else nonzero
+            status: 0 on success, else 1
             error_code: returned value from CreateProcess on success, else GetLastError()
         """
         ret_code = CreateProcess(app_name, command_line, process_attributes, thread_attributes, inherit_h,
                 creation_flags, environment, working_dir, byref(self.startupinfo), byref(self.process_information))
 
         if not ret_code:
-            return (ret_code, GetLastError())
+            return (1, GetLastError())
         self.pid = self.process_information.dwProcessId
         return (0, ret_code)
 
@@ -104,13 +104,13 @@ class ProcessCreator():
 
         Returns:
             tuple of (status, error_code)
-            status: 0 on success, else (DWORD) - 1
-            error_code: returned value from SuspendThread on success, else  GetLastError()
+            status: 0 on success, else 1
+            error_code: returned value from SuspendThread on success, else GetLastError()
         """
         ret_code = SuspendThread(self.process_information.hThread)
 
-        if ret_code == (DWORD)-1 -1:
-            return (ret_code, GetLastError())
+        if ret_code == DWORD(-1).value - 1:
+            return (1, GetLastError())
         return (0, ret_code)
 
 
@@ -120,13 +120,13 @@ class ProcessCreator():
 
         Returns:
             tuple of (status, error_code)
-            status: 0 on success, else (DWORD) - 1
-            error_code: returned value from ResumeThread on success, else  GetLastError()
+            status: 0 on success, else 1
+            error_code: returned value from ResumeThread on success, else GetLastError()
         """
         ret_code = ResumeThread(self.process_information.hThread)
 
         if ret_code == DWORD(-1).value - 1:
-            return (ret_code, GetLastError())
+            return (1, GetLastError())
         return (0, ret_code)
 
 
