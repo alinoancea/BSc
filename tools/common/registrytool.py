@@ -16,9 +16,10 @@ RK_MAP = {
 
 
 # load registry whitelist
-with open(REG_WHITELIST) as fr:
-    for path in fr.readlines():
-        WHITELIST.append(path.lower().replace('\\', '/'))
+if os.path.exists(REG_WHITELIST):
+    with open(REG_WHITELIST) as fr:
+        for path in fr.readlines():
+            WHITELIST.append(path.lower().replace('\\', '/'))
 
 
 
