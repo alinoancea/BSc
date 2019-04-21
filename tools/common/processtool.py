@@ -64,6 +64,7 @@ class ProcessCreator():
 
     def __init__(self):
         self.pid = None
+        self.hprocess = None
         self.process_information = PROCESS_INFORMATION()
         self.startupinfo = STARTUPINFO()
         self.startupinfo.cb = sizeof(self.startupinfo)
@@ -95,6 +96,7 @@ class ProcessCreator():
         if not ret_code:
             return (1, GetLastError())
         self.pid = self.process_information.dwProcessId
+        self.hprocess = self.process_information.hProcess
         return (0, ret_code)
 
 
