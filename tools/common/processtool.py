@@ -56,6 +56,7 @@ CreateProcess = windll.kernel32.CreateProcessW
 GetLastError = windll.kernel32.GetLastError
 ResumeThread = windll.kernel32.ResumeThread
 SuspendThread = windll.kernel32.SuspendThread
+TerminateProcess = windll.kernel32.TerminateProcess
 
 
 
@@ -130,5 +131,22 @@ class ProcessCreator():
         if ret_code == DWORD(-1).value - 1:
             return (1, GetLastError())
         return (0, ret_code)
+
+
+    def terminate(self):
+        """Terminate process.
+        More: https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-terminateprocess
+        
+        Returns:
+            tuple of (status, error_code)
+            status: 0 on success, else 1
+            error_code: returned value from TerminateProcess on success, else GetLastError()
+        """
+        ret_code = TerminateProcess(self.hprocess, 0x0)
+
+        if not ret_code:
+            return (1, GetLastError())
+        return (0, ret_code)
+
 
 
