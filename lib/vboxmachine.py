@@ -122,6 +122,7 @@ class VBoxMachine:
 
     def __copy_on_vm(self, source, destination, indent=True):
         source = os.path.normpath(source)
+        indentation = '\t' if indent else ''
         if os.path.isdir(source):
             if not self.__check_existing_directory(self.deploy_location + '\\' + destination):
                 self.__create_directory(self.deploy_location + '\\' + destination)
@@ -130,18 +131,20 @@ class VBoxMachine:
                     source_file = os.path.join(root, f)
                     destination_file = self.deploy_location + '\\' + destination + '\\' + f
 
-                    self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '',
-                            source_file, destination_file), self.__file_copy(os.path.join(source, f), 
-                            destination_file), show_progress=False)
+                    self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % (indentation, source_file,
+                            destination_file), self.__file_copy(os.path.join(source, f), destination_file),
+                            show_progress=False)
         else:
             destination_file = self.deploy_location + '\\' + destination
 
-            self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % ('\t' if indent else '', source,
-                    destination_file), self.__file_copy(source, destination_file), show_progress=False)
+            self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % (indentation, source, destination_file),
+                    self.__file_copy(source, destination_file), show_progress=False)
 
 
-    def copy_from_vm(self, source, destination):
-        self.__wait_for_operation('[-] Extracting [%s] -> [%s]...' % (source, destination),
+    def copy_from_vm(self, source, destination, indent=True):
+        destination = os.path.normpath(destination)
+        indentation = '\t' if indent else ''
+        self.__wait_for_operation('%s[-] Extracting [%s] -> [%s]...' % (indentation, source, destination),
                 self.__file_copy(source, destination, to_guest=False), show_progress=False)
 
     def deploy_necessary_files(self):
