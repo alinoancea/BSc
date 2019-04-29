@@ -211,6 +211,8 @@ class ProcessWatcher():
 
 
     def snap(self):
+        """Get a snapshot of processes on the system and save PID for every process.
+        """
         hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0x0)
         if hProcessSnap == INVALID_HANDLE_VALUE:
             print('   [!] ERROR-snap: CreateToolhelp32Snapshot. Code: %d' % (GetLastError(),))
@@ -235,6 +237,8 @@ class ProcessWatcher():
 
 
     def suspend_differences(self):
+        """Get a fresh snapshot of processes and suspend it if PID is unknown.
+        """
         hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0x0)
         if hProcessSnap == INVALID_HANDLE_VALUE:
             print('   [!] ERROR-suspend: CreateToolhelp32Snapshot. Code: %d' % (GetLastError(),))
@@ -262,6 +266,11 @@ class ProcessWatcher():
 
 
     def suspend_process(self, pid):
+        """Searches through processes threads and suspend the one with specified PID.
+
+        Args:
+            pid: int, process ID which should be suspended
+        """
         hThreadSnapshot = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0x0)
 
         te32 = THREADENTRY32()
