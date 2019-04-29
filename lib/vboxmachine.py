@@ -168,6 +168,11 @@ class VBoxMachine:
         self.__execute_command('%sunzip.exe' % (tools_dir,), ['%spython.zip' % (tools_dir,), '-d', tools_dir])
 
 
+    def extract_archive(self):
+        self.copy_from_vm(self.deploy_location + '\\extraction.zip', os.path.join(PROJECT_DIR, 'results',
+                'results_%s_%s.zip' % (self.name, str(datetime.now()).split('.')[0].replace(' ','_'))))
+
+
     def launch_client_app(self):
         print('[#] Launching clientapp.py on guest...')
         python_path = self.deploy_location + '\\tools\\python\\python.exe'
