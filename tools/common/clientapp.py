@@ -6,9 +6,10 @@ import zipfile
 import subprocess
 import sys
 
+from registrytool import RegistryWatcher
 from processtool import ProcessCreator, ProcessWatcher
-from processtool import CREATE_SUSPENDED
-import registrytool
+from windows_components import CREATE_SUSPENDED
+from folderstool import FolderWatcher
 
 
 DEPLOY_DIR = os.path.join('C:\\', 'maltest')
@@ -41,9 +42,21 @@ if response[0]:
     print('[!] ERROR: Hollows hunter process creation. Code: %d' % (response[1],))
     sys.exit()
 
-registrytool.create_snapshot()
+registry_watcher = RegistryWatcher(output=open(os.path.join(EXTRACTION_DIR, 'registry_changes.txt'), 'w'))
+print('[#] Snapshotting registry...', end='')
+t0 = time.time()
+registry_watcher.snap()
+print('%s sec.' % (time.time() - t0))
+
 process_watcher = ProcessWatcher()
+print('[#] Snapshotting processes...', end='')
+t0 = time.time()
 process_watcher.snap()
+print('%s sec.' % (time.time() - t0))
+
+watch_folder = FolderWatcher(output=open(os.path.join(EXTRACTION_DIR, 'folder_changes.txt'), 'w'))
+watch_folder.add_to_watch()
+watch_folder.start()
 
 print('[#] Executing [%s]...' % (MALWARE_PATH,))
 malware_proc = ProcessCreator()
@@ -59,7 +72,8 @@ time.sleep(WAIT_TIME)
 hollows_proc.resume()
 
 process_watcher.suspend_differences()
-registrytool.show_diff()
+watch_folder.close()
+registry_watcher.show_diff()
 
 malware_proc.terminate()
 
