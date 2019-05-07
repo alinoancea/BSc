@@ -4,6 +4,8 @@ import os
 import sys
 import time
 
+from datetime import datetime
+
 import virtualbox
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/..')
@@ -99,7 +101,7 @@ class VBoxMachine:
             raise VBoxLibException('args argument should be of type "list" or "tuple"')
         args = ['/c', cmd] + args
         return self.guest_session.execute('cmd.exe', args)
-        
+
 
     def __create_directory(self, path, mode=700, flags=[]):
         self.guest_session.directory_create(path, mode, flags)
@@ -119,6 +121,7 @@ class VBoxMachine:
             if 'No such file or directory on guest' in str(e):
                 return False
             raise
+
 
     def __copy_on_vm(self, source, destination, indent=True):
         source = os.path.normpath(source)
@@ -146,6 +149,7 @@ class VBoxMachine:
         indentation = '\t' if indent else ''
         self.__wait_for_operation('%s[-] Extracting [%s] -> [%s]...' % (indentation, source, destination),
                 self.__file_copy(source, destination, to_guest=False), show_progress=False)
+
 
     def deploy_necessary_files(self):
         print('[#] Copying necessary files on [%s]...' % (self.name,))
@@ -178,6 +182,8 @@ class VBoxMachine:
         python_path = self.deploy_location + '\\tools\\python\\python.exe'
         tools_dir = self.deploy_location + '\\tools\\'
         self.__execute_command(python_path, ['%sclientapp.py' % (tools_dir,)])
+
+        self.extract_archive()
 
 
         
