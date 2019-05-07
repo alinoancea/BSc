@@ -1,5 +1,5 @@
-from ctypes import c_int, c_bool, c_void_p, c_long, c_short, c_ulong, c_char, c_ushort, c_ubyte, c_long
-from ctypes import windll, byref, Structure, sizeof, POINTER
+from ctypes import c_int, c_bool, c_void_p, c_long, c_short, c_ulong, c_char, c_ushort, c_ubyte, c_long, c_wchar
+from ctypes import windll, byref, Structure, sizeof, POINTER, create_string_buffer, cast, memset
 
 
 ### Windows constants
@@ -11,6 +11,7 @@ LPTSTR = POINTER(c_char)
 LPBYTE = POINTER(c_ubyte)
 LONG = c_long
 CHAR = c_char
+WCHAR = c_wchar
 if sizeof(c_void_p) == 8:
     from ctypes import c_longlong
     ULONG_PTR = c_longlong
@@ -24,6 +25,20 @@ CREATE_SUSPENDED = 0x00000004
 TH32CS_SNAPPROCESS = 0x00000002
 TH32CS_SNAPTHREAD = 0x00000004
 THREAD_SUSPEND_RESUME = 0x0002
+
+GENERIC_READ = 0x80000000
+FILE_SHARE_READ = 0x00000001
+FILE_SHARE_WRITE = 0x00000002
+OPEN_EXISTING = 0x3
+FILE_FLAG_BACKUP_SEMANTICS = 0x02000000
+FILE_NOTIFY_CHANGE_FILE_NAME = 0x00000001
+FILE_NOTIFY_CHANGE_DIR_NAME = 0x00000002
+FILE_NOTIFY_CHANGE_ATTRIBUTES = 0x00000004
+FILE_NOTIFY_CHANGE_SIZE = 0x00000008
+FILE_NOTIFY_CHANGE_LAST_WRITE = 0x00000010
+FILE_NOTIFY_CHANGE_CREATION = 0x00000040
+FILE_NOTIFY_CHANGE_SECURITY = 0x00000100
+
 
 MAX_PATH = 0x00000104
 INVALID_HANDLE_VALUE = -1
@@ -96,6 +111,18 @@ class THREADENTRY32(Structure):
 
 
 
+class FILE_NOTIFY_INFORMATION(Structure):
+    _fields_ = [
+        ('NextEntryOffset', DWORD),
+        ('Action',          DWORD),
+        ('FileNameLength',  DWORD),
+        ('FileName',        WCHAR)
+    ]
+
+PFILE_NOTIFY_INFORMATION = POINTER(FILE_NOTIFY_INFORMATION)
+
+
+
 ### Windows function headers
 
 CreateProcess = windll.kernel32.CreateProcessW
@@ -110,3 +137,5 @@ Thread32First = windll.kernel32.Thread32First
 Thread32Next = windll.kernel32.Thread32Next
 OpenThread = windll.kernel32.OpenThread
 TerminateProcess = windll.kernel32.TerminateProcess
+CreateFile = windll.kernel32.CreateFileW
+ReadDirectoryChangesW = windll.kernel32.ReadDirectoryChangesW
