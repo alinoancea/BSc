@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 import fnmatch
 
 import winreg
@@ -22,15 +23,24 @@ if os.path.exists(REG_WHITELIST):
             WHITELIST.append(path.lower().replace('\\', '/'))
 
 
+def whitelisted(path):
+    pth = path.lower().replace('\\', '/')
+    for e in WHITELIST:
+        if fnmatch.fnmatch(pth, e):
+            return True
+
+
 
 class RegistryWatcher():
 
 
-    def __init__(self, keys=(winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER), exclude=None):
+    def __init__(self, keys=(winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER), exclude=whitelisted, 
+            output=sys.stdout):
         self.keys = keys
         self.d = {}
         self.changes = []
         self.exclude = exclude
+        self.output = output
 
 
     def snap(self, path=None, key=None):
@@ -110,30 +120,20 @@ class RegistryWatcher():
             idx += 1
 
 
+    def show_diff(self):
+        diff = self.diff()
+        print('[*] Differences:', file=self.output)
+        for path, old, new in diff:
+            if old is None:
+                op = 'created: [%s]' % new
+            elif new is None:
+                op = 'deleted (was [%s])' % old
+            else:
+                op = 'changed: [%s] -> [%s]' % (old, new)
+            try:
+                print('[-]   [%s]: %s' % (path, op), file=self.output)
+            except Exception as e:
+                print('%s\nERROR: %s\n%s' % ('=' * 20, str(e), '=' * 20), file=self.output)
 
-def whitelisted(path):
-    pth = path.lower().replace('\\', '/')
-    for e in WHITELIST:
-        if fnmatch.fnmatch(pth, e):
-            return True
-
-
-def create_snapshot():
-    global REG_WATCHER
-
-    REG_WATCHER = RegistryWatcher(exclude=whitelisted)
-    print('[#] Snapshotting registry...')
-    REG_WATCHER.snap()
-
-
-def show_diff():
-    diff = REG_WATCHER.diff()
-    print('[*] Differences:')
-    for path, old, new in diff:
-        if old is None:
-            op = 'created: [%s]' % new
-        elif new is None:
-            op = 'deleted (was [%s])' % old
-        else:
-            op = 'changed: [%s] -> [%s]' % (old, new)
-        print('[-]   [%s]: %s' % (path, op))
+        if self.output is not sys.stdout:
+            self.output.close()
