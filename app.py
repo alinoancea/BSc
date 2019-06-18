@@ -6,6 +6,7 @@ import json
 import sys
 
 from lib.vboxmachine import VBoxMachine
+from exception import VBoxLibException
 
 # GLOBALS
 PROJECT_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -80,8 +81,15 @@ if __name__ == '__main__':
     for vbox_params in vms:
         vbx = VBoxMachine(**vbox_params)
 
-        vbx.restore_snapshot()
-        vbx.launch()
-        vbx.deploy_necessary_files()
-        vbx.launch_client_app()
-        vbx.power_off()
+        try:
+            vbx.restore_snapshot()
+            vbx.launch()
+            vbx.deploy_necessary_files()
+            vbx.launch_client_app()
+            vbx.power_off()
+        except VBoxLibException as e:
+            try:
+                vbx.power_off()
+            except:
+                pass
+            print(e, file=sys.stderr)

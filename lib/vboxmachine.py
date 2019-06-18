@@ -49,20 +49,27 @@ class VBoxMachine:
         self.session.unlock_machine()
 
 
-    def __wait_for_operation(self, message, status, show_progress=True):
+    def __wait_for_operation(self, op, message, status, show_progress=True):
         print(message, end='' if show_progress else '\n', flush=True)
         last_status = -10
+        retries = 5
         while status.percent < 100:
-            if show_progress and status.percent - last_status > 9:
+            if status.percent - last_status > 9:
+                if show_progress:
                 print('%s%%..' % (status.percent,), end='', flush=True)
                 last_status = status.percent
+            else:
+                if not retries:
+                    raise VBoxLibException('ERROR in [%s.__wait_for_operation] - exceeded operation retries' % (op,))
+                if status.percent == last_status:
+                    retries -= 1
             time.sleep(0.5)
         if show_progress:
             print('100%')
 
 
     def launch(self):
-        self.__wait_for_operation('[#] Launching machine [%s]..' % (self.name,),
+        self.__wait_for_operation('launch_vm_process', '[#] Launching machine [%s]..' % (self.name,),
                 self.vm.launch_vm_process(self.session, self.launch_type))
 
         self.console_session = self.session.console
@@ -75,13 +82,14 @@ class VBoxMachine:
 
     def restore_snapshot(self):
         self.vm.lock_machine(self.session, virtualbox.library.LockType(2))
-        self.__wait_for_operation('[#] Restoring snapshot on [%s]..' % (self.name,),
+        self.__wait_for_operation('restore_snapshot', '[#] Restoring snapshot on [%s]..' % (self.name,),
                 self.session.machine.restore_snapshot(self.snapshot))
         self.session.unlock_machine()
 
 
     def power_off(self):
-        self.__wait_for_operation('[#] Powering off [%s]..' % (self.name,), self.console_session.power_down())
+        self.__wait_for_operation('power_off', '[#] Powering off [%s]..' % (self.name,),
+                self.console_session.power_down())
 
 
     def __execute_command(self, cmd, args=[]):
@@ -135,21 +143,21 @@ class VBoxMachine:
                     source_file = os.path.join(root, f)
                     destination_file = self.deploy_location + '\\' + destination + '\\' + f
 
-                    self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % (indentation, source_file,
+                    self.__wait_for_operation('__file_copy', '%s[-] Copy [%s] -> [%s]...' % (indentation, source_file,
                             destination_file), self.__file_copy(os.path.join(source, f), destination_file),
                             show_progress=False)
         else:
             destination_file = self.deploy_location + '\\' + destination
 
-            self.__wait_for_operation('%s[-] Copy [%s] -> [%s]...' % (indentation, source, destination_file),
-                    self.__file_copy(source, destination_file), show_progress=False)
+            self.__wait_for_operation('__file_copy', '%s[-] Copy [%s] -> [%s]...' % (indentation, source, 
+                    destination_file), self.__file_copy(source, destination_file), show_progress=False)
 
 
     def copy_from_vm(self, source, destination, indent=True):
         destination = os.path.normpath(destination)
         indentation = '\t' if indent else ''
-        self.__wait_for_operation('%s[-] Extracting [%s] -> [%s]...' % (indentation, source, destination),
-                self.__file_copy(source, destination, to_guest=False), show_progress=False)
+        self.__wait_for_operation('__file_copy', '%s[-] Extracting [%s] -> [%s]...' % (indentation, source, 
+                destination), self.__file_copy(source, destination, to_guest=False), show_progress=False)
 
 
     def deploy_necessary_files(self):
