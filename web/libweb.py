@@ -77,7 +77,7 @@ def start_webapp(interface='0.0.0.0', port=8080, logfile='webapp.log'):
     if not os.path.isdir('logs'):
         os.mkdir('logs')
 
-    # sys.stdout = sys.stderr = LogFile(os.path.join('logs', logfile))
+    sys.stdout = sys.stderr = LogFile(os.path.join('logs', logfile))
     bottle.run(host=interface, port=port)
 
 
