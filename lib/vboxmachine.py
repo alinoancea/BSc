@@ -201,7 +201,7 @@ class VBoxMachine:
             '-wt', str(self.wait_time),
             '-zf', self.extraction_fn
         ]
-        self.__execute_command(python_path, ['%sclientapp.py' % (tools_dir,)] + args)
+        self.__execute_command('launch_client_app', python_path, ['%sclientapp.py' % (tools_dir,)] + args)
 
         self.extract_archive()
 
