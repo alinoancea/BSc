@@ -19,8 +19,8 @@ PROJECT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/..'
 class VBoxMachine:
 
 
-    def __init__(self, name, snapshot, username, password, sample, launch_type='headless',
-            sample_name='a.exe', wait_time=30):
+    def __init__(self, name, snapshot, username, password, sample, launch_type='headless', wait_time=30,
+            extraction_zip='extraction.zip', sample_name='a.exe'):
         self.virtualbox = virtualbox.VirtualBox()
         self.session = virtualbox.Session()
 
@@ -30,6 +30,8 @@ class VBoxMachine:
         self.sample_path = os.path.join(PROJECT_DIR, sample) if not os.path.isabs(sample) else sample
         self.sample_name = sample_name
         self.launch_type = launch_type
+        self.wait_time = wait_time
+        self.extraction_fn = extraction_zip
         self.deploy_location = 'C:\\maltest'
         self.guest_session = None
         self.console_session = None
@@ -181,7 +183,13 @@ class VBoxMachine:
         print('[#] Launching clientapp.py on guest...')
         python_path = self.deploy_location + '\\tools\\python\\python.exe'
         tools_dir = self.deploy_location + '\\tools\\'
-        self.__execute_command(python_path, ['%sclientapp.py' % (tools_dir,)])
+        args = [
+            '-dd', self.deploy_location,
+            '-sn', self.sample_name,
+            '-wt', str(self.wait_time),
+            '-zf', self.extraction_fn
+        ]
+        self.__execute_command(python_path, ['%sclientapp.py' % (tools_dir,)] + args)
 
         self.extract_archive()
 
