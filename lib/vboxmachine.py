@@ -99,7 +99,7 @@ class VBoxMachine:
             raise VBoxLibException('There is no command specified or typeof(cmd) is not "str"')
         if not isinstance(args, (list, tuple)):
             raise VBoxLibException('args argument should be of type "list" or "tuple"')
-        args = ['/c', cmd] + args
+        args = ['/c', cmd] + list(args)
         return self.guest_session.execute('cmd.exe', args)
 
 
