@@ -56,7 +56,7 @@ class VBoxMachine:
         while status.percent < 100:
             if status.percent - last_status > 9:
                 if show_progress:
-                print('%s%%..' % (status.percent,), end='', flush=True)
+                    print('%s%%..' % (status.percent,), end='', flush=True)
                 last_status = status.percent
             else:
                 if not retries:
@@ -75,7 +75,7 @@ class VBoxMachine:
         self.console_session = self.session.console
         self.guest_session = self.console_session.guest.create_session(self.username, self.password)
 
-        _, stdout, _ = self.__execute_command('set|findstr /ic:PROCESSOR_ARCHITECTURE')
+        _, stdout, _ = self.__execute_command('proc_architecture', 'set|findstr /ic:PROCESSOR_ARCHITECTURE')
 
         self.vm_architecture = '64' if 'AMD64' in stdout.decode().upper() else '86'
 
@@ -92,7 +92,7 @@ class VBoxMachine:
                 self.console_session.power_down())
 
 
-    def __execute_command(self, cmd, args=[]):
+    def __execute_command(self, op, cmd, args=[]):
         """Executes a command on the VM.
 
         Args:
@@ -109,7 +109,11 @@ class VBoxMachine:
         if not isinstance(args, (list, tuple)):
             raise VBoxLibException('args argument should be of type "list" or "tuple"')
         args = ['/c', cmd] + list(args)
-        return self.guest_session.execute('cmd.exe', args)
+        p, o, e = self.guest_session.execute('cmd.exe', args)
+        if e and 'Traceback' in e.decode(errors='ignore'):
+            raise VBoxLibException('ERROR in [%s.__execute_command]:\n%s' % (op, e.decode(errors='ignore')))
+
+        return (p, o, e)
 
 
     def __create_directory(self, path, mode=700, flags=[]):
@@ -178,11 +182,12 @@ class VBoxMachine:
     def __unzip_tools(self):
         print('[#] Unzip python...')
         tools_dir = self.deploy_location + '\\tools\\'
-        self.__execute_command('%sunzip.exe' % (tools_dir,), ['%spython.zip' % (tools_dir,), '-d', tools_dir])
+        self.__execute_command('__unzip_tools', '%sunzip.exe' % (tools_dir,), ['%spython.zip' % (tools_dir,),
+                '-d', tools_dir])
 
 
     def extract_archive(self):
-        self.copy_from_vm(self.deploy_location + '\\extraction.zip', os.path.join(PROJECT_DIR, 'results',
+        self.copy_from_vm(self.deploy_location + '\\' + self.extraction_fn, os.path.join(PROJECT_DIR, 'results',
                 'results_%s_%s.zip' % (self.name, str(datetime.now()).split('.')[0].replace(' ','_'))))
 
 
