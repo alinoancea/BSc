@@ -43,8 +43,7 @@ class VBoxMachine:
         try:
             self.snapshot = self.vm.find_snapshot(snapshot or '')
         except virtualbox.library.VBoxErrorObjectNotFound as e:
-            raise VBoxLibException('There is no snapshot on VM or the snapshot couldn\'t be found!\n'
-                    'ERROR: %s' % (str(e)))
+            raise VBoxLibException('VM has no snapshots or snapshot name is invalid!\nERROR: %s' % (str(e)))
         
         self.vm.create_session(session=self.session)
         self.session.unlock_machine()
