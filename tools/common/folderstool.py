@@ -80,7 +80,7 @@ class FolderWatcher(threading.Thread):
                             size = '%s bytes' % os.path.getsize(fn)
                         except:
                             size = 'missing'
-                        print('[-]   [%s] changed: %s (%s)' % (fn, evt, size), file=self.output)
+                        print('[%s] changed: %s (%s)' % (fn, evt, size), file=self.output)
                         self.results.append(fn)
                     if not nextoffs:
                         break

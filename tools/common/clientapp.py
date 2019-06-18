@@ -118,7 +118,10 @@ def execute_experiment(argp):
     with zipfile.ZipFile(ZIP_FN, 'a') as zip_file:
         for root, _, files in os.walk(EXTRACTION_DIR):
             for f in files:
-                zip_file.write(os.path.join(root, f))
+                if f.endswith('log') or f.endswith('txt'):
+                    zip_file.write(os.path.join(root, f), 'logs\\' + f)
+                else:
+                    zip_file.write(os.path.join(root, f), 'dumps\\' + f)
 
 
 if __name__ == '__main__':

@@ -1,0 +1,95 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Home :: Analiza automata a comportamentului dinamic al virusilor</title>
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/webapp.css">
+
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/webapp.js"></script>
+
+    
+</head>
+<body>
+    <div class="container mycontainer">
+        <div class="title text-center">
+            <h1>Analiza automată a comportamentului <br> dinamic al virușilor</h1>
+        </div>
+        
+        <div id="experiment">
+            <h2>Create experiment</h2>
+            <div id="exp_compoent">
+                <table>
+                    <tr>
+                        <td>
+                            Virtual machine name
+                        </td>
+                        <td>
+                            <input id="vm_name" type="text" value="windows_10_x64_rfm" size="40">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Virtual machine snapshot
+                        </td>
+                        <td>
+                            <input id="vm_snapshot" type="text" value="rfm_2" size="40">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Username
+                        </td>
+                        <td>
+                            <input id="vm_username" type="text" value="IEUser" size="40">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Password
+                        </td>
+                        <td>
+                            <input id="vm_password" type="text" value="a" size="40">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Malware sample
+                        </td>
+                        <td>
+                            <input id="malware_file" type="text" value="malware/ransomware/5A131B48F147586AFA20B0A1A00A1533.sample" size="40">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" class="d-flex align-items-center">
+                            <input id="button_exp" type="button" value="Create&Run" onclick="create_exp();">
+                            <div id="status_exp" class="spinner-border text-light" role="status">
+                                <span class="sr-only">Loading...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+                <span id="exp_status_text"></span>
+            </div>
+        </div>
+        <div id="reports">
+            <h2>Reports</h2>
+            <div class="reports_content">
+                % for r in reports:
+                <div>
+                    <a href="/experiment/{{r['date']}}" target="_blank">
+                        Report for `{{r['sample']}}` sample @ {{r['date']}}
+                    </a>
+                </div>
+                % end
+            </div>
+        </div>
+    </div>
+</body>
+</html>

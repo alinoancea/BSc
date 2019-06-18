@@ -122,7 +122,6 @@ class RegistryWatcher():
 
     def show_diff(self):
         diff = self.diff()
-        print('[*] Differences:', file=self.output)
         for path, old, new in diff:
             if old is None:
                 op = 'created: [%s]' % new
@@ -131,7 +130,7 @@ class RegistryWatcher():
             else:
                 op = 'changed: [%s] -> [%s]' % (old, new)
             try:
-                print('[-]   [%s]: %s' % (path, op), file=self.output)
+                print('[%s]: %s' % (path, op), file=self.output)
             except Exception as e:
                 print('%s\nERROR: %s\n%s' % ('=' * 20, str(e), '=' * 20), file=self.output)
 

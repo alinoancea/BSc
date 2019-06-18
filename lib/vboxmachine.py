@@ -3,6 +3,8 @@
 import os
 import sys
 import time
+import zipfile
+import json
 
 from datetime import datetime
 
@@ -19,7 +21,7 @@ PROJECT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/..'
 class VBoxMachine:
 
 
-    def __init__(self, name, snapshot, username, password, sample, launch_type='headless', wait_time=30,
+    def __init__(self, name, snapshot, username, password, sample, launch_type='headless', wait_time=5,
             extraction_zip='extraction.zip', sample_name='a.exe'):
         self.virtualbox = virtualbox.VirtualBox()
         self.session = virtualbox.Session()
@@ -27,7 +29,7 @@ class VBoxMachine:
         self.name = name
         self.username = username
         self.password = password
-        self.sample_path = os.path.join(PROJECT_DIR, sample) if not os.path.isabs(sample) else sample
+        self.sample_path = os.path.normpath(os.path.join(PROJECT_DIR, sample) if not os.path.isabs(sample) else sample)
         self.sample_name = sample_name
         self.launch_type = launch_type
         self.wait_time = wait_time
@@ -36,14 +38,18 @@ class VBoxMachine:
         self.guest_session = None
         self.console_session = None
 
-        self.vm = self.virtualbox.find_machine(self.name)
-        if not self.vm:
-            raise VBoxLibException('Couldn\'t find [%s] VM in your VirtualBox environment')
+        try:
+            self.vm = self.virtualbox.find_machine(self.name)
+        except virtualbox.library.VBoxErrorObjectNotFound:
+            raise VBoxLibException('Couldn\'t find [%s] VM in your VirtualBox environment' % (self.name,))
 
         try:
             self.snapshot = self.vm.find_snapshot(snapshot or '')
         except virtualbox.library.VBoxErrorObjectNotFound as e:
-            raise VBoxLibException('VM has no snapshots or snapshot name is invalid!\nERROR: %s' % (str(e)))
+            raise VBoxLibException('VM has no snapshots or snapshot name is invalid!\nERROR: %s' % (str(e),))
+
+        if not os.path.isfile(self.sample_path):
+            raise VBoxLibException('Sample [%s] can\'t be found!' % (self.sample_path,))
         
         self.vm.create_session(session=self.session)
         self.session.unlock_machine()
@@ -73,7 +79,10 @@ class VBoxMachine:
                 self.vm.launch_vm_process(self.session, self.launch_type))
 
         self.console_session = self.session.console
-        self.guest_session = self.console_session.guest.create_session(self.username, self.password)
+        try:
+            self.guest_session = self.console_session.guest.create_session(self.username, self.password)
+        except:
+            raise VBoxLibException('Username or password are invalid for guest creation!')
 
         _, stdout, _ = self.__execute_command('proc_architecture', 'set|findstr /ic:PROCESSOR_ARCHITECTURE')
 
@@ -187,8 +196,24 @@ class VBoxMachine:
 
 
     def extract_archive(self):
-        self.copy_from_vm(self.deploy_location + '\\' + self.extraction_fn, os.path.join(PROJECT_DIR, 'results',
-                'results_%s_%s.zip' % (self.name, str(datetime.now()).split('.')[0].replace(' ','_'))))
+        results_dir = os.path.join(PROJECT_DIR, 'results')
+        datetime_now = datetime.now().strftime('%Y-%m-%d_%H:%M:%S')
+        experiment_result_dir = os.path.join(results_dir, datetime_now)
+        os.makedirs(experiment_result_dir)
+
+        zip_location = os.path.join(experiment_result_dir, 'results.zip')
+
+        self.copy_from_vm(self.deploy_location + '\\' + self.extraction_fn, zip_location)
+
+        zipfile.ZipFile(zip_location, 'r').extractall(experiment_result_dir)
+        with open(os.path.join(experiment_result_dir, 'info.json'), 'w') as f:
+            f.write(json.dumps({
+                'malware': self.sample_path,
+                'vm': self.name,
+                'vm_achitecture': self.vm_architecture,
+                'vm_username': self.username,
+                'vm_password': self.password
+            }))
 
 
     def launch_client_app(self):

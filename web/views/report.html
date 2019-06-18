@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Report :: Analiza automata a comportamentului dinamic al virusilor</title>
+
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/webapp.css">
+
+
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/popper.min.js"></script>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/webapp.js"></script>
+
+    
+</head>
+<body>
+    <div class="container mycontainer">
+        <div class="title text-center">
+            <h1>Analiza automată a comportamentului <br> dinamic al virușilor</h1>
+        </div>
+        
+        <div id="experiment" class="title text-center">
+            <h2>Report @ {{report['date']}}</h2>
+        </div>
+        <div id="experiment">
+            <div class="report_content">
+                <h4>General information</h4>
+                <div class="report_content">
+                    <div><b>Name:</b> {{report['vm']}}</div>
+                    <div><b>Architecture:</b> x{{report['vm_achitecture']}}</div>
+                    <div><b>Username:</b> {{report['vm_username']}}</div>
+                    <div><b>Password:</b> {{report['vm_password']}}</div>
+                    <div><b>Malware used:</b> {{report['malware']}}</div>
+                </div>
+
+                <h4>File changes</h4>
+                <div class="report_content">
+                    % for f in report['folders']:
+                    <div>
+                        {{f}}
+                    </div>
+                    % end
+                </div>
+
+                <h4>Registry changes</h4>
+                <div class="report_content">
+                        % for r in report['registry']:
+                        <div>
+                            {{r}}
+                        </div>
+                        % end
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
