@@ -103,7 +103,7 @@ def available_reports():
         except Exception:
             continue
 
-    return results
+    return sorted(results, key=lambda x:x['date'], reverse=True)
 
 
 def run_experiment(args):
