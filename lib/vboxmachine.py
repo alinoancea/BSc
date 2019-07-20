@@ -21,8 +21,8 @@ PROJECT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/..'
 class VBoxMachine:
 
 
-    def __init__(self, name, snapshot, username, password, sample, launch_type='headless', wait_time=5,
-            extraction_zip='extraction.zip', sample_name='a.exe'):
+    def __init__(self, name, snapshot, username, password, sample, launch_type='headless', wait_time=30,
+            extraction_zip='extraction', sample_name='a'):
         self.virtualbox = virtualbox.VirtualBox()
         self.session = virtualbox.Session()
 
@@ -30,10 +30,10 @@ class VBoxMachine:
         self.username = username
         self.password = password
         self.sample_path = os.path.normpath(os.path.join(PROJECT_DIR, sample) if not os.path.isabs(sample) else sample)
-        self.sample_name = sample_name
+        self.sample_name = sample_name + '.exe'
         self.launch_type = launch_type
         self.wait_time = wait_time
-        self.extraction_fn = extraction_zip
+        self.extraction_fn = extraction_zip + '.zip'
         self.deploy_location = 'C:\\maltest'
         self.guest_session = None
         self.console_session = None
