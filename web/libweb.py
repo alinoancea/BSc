@@ -85,6 +85,11 @@ def available_reports():
     reports_path = os.path.join(PROJECT_DIR, 'results')
     results = []
 
+    for _ in os.walk(reports_path):
+        break
+    else:
+        return results
+
     r, d, _ = next(os.walk(reports_path))
     for dr in d:
         try:
