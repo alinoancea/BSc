@@ -38,7 +38,7 @@ class FolderWatcher(threading.Thread):
         if handle == INVALID_HANDLE_VALUE:
             print('[!] ERROR: Could not get handle for [%s] directory!' % (path,), file=sys.stderr)
             sys.exit(-1)
-        
+
         self.hfolders[path] = handle
 
 
@@ -68,7 +68,7 @@ class FolderWatcher(threading.Thread):
 
                 offs = 0
                 for _ in range(100):
-                    fni = cast(buffer[offs:offs+sizeof(FILE_NOTIFY_INFORMATION)], PFILE_NOTIFY_INFORMATION).contents
+                    fni = cast(buffer[offs:offs + sizeof(FILE_NOTIFY_INFORMATION)], PFILE_NOTIFY_INFORMATION).contents
                     namelen, nextoffs = int(fni.FileNameLength), int(fni.NextEntryOffset)
                     name = buffer.raw[offs + 12:offs + 12 + namelen].decode('utf16')
                     evt = EVENTS.get(fni.Action)
@@ -85,6 +85,3 @@ class FolderWatcher(threading.Thread):
                     if not nextoffs:
                         break
                     offs += nextoffs
-
-
-

@@ -4,7 +4,7 @@ import os
 import sys
 import fnmatch
 
-import winreg
+import winreg   # NOQA
 
 
 WHITELIST = []
@@ -34,7 +34,7 @@ def whitelisted(path):
 class RegistryWatcher():
 
 
-    def __init__(self, keys=(winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER), exclude=whitelisted, 
+    def __init__(self, keys=(winreg.HKEY_LOCAL_MACHINE, winreg.HKEY_CURRENT_USER), exclude=whitelisted,
             output=sys.stdout):
         self.keys = keys
         self.d = {}
@@ -48,7 +48,7 @@ class RegistryWatcher():
             for k in self.keys:
                 self.d[k] = self.snap(RK_MAP[k], k)
             return
-        d = {0:{}}
+        d = {0: {}}
         idx = 0
         while 1:
             try:
@@ -115,7 +115,7 @@ class RegistryWatcher():
             except PermissionError:
                 idx += 1
                 continue
-            self.diff(subpath, subkey, d.get(name, {0:{}}))
+            self.diff(subpath, subkey, d.get(name, {0: {}}))
             winreg.CloseKey(subkey)
             idx += 1
 

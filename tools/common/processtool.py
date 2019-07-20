@@ -21,7 +21,7 @@ class ProcessCreator():
             creation_flags=0x0, environment=None, working_dir=None):
         """Creates a new process with the specified parameters.
         More: https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-createprocessa
-        
+
         Args:
             app_name: module to execute
             command_line: command line to execute
@@ -31,7 +31,7 @@ class ProcessCreator():
             creation_flags: see https://docs.microsoft.com/en-us/windows/desktop/ProcThread/process-creation-flags
             environment: -
             working_dir: process working directory (i.e None = calling process working directory)
-        
+
         Returns:
             tuple of (status, error_code)
             status: 0 on success, else 1
@@ -81,8 +81,9 @@ class ProcessCreator():
 
     def terminate(self):
         """Terminate process.
-        More: https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-terminateprocess
-        
+        More:
+            https://docs.microsoft.com/en-us/windows/desktop/api/processthreadsapi/nf-processthreadsapi-terminateprocess
+
         Returns:
             tuple of (status, error_code)
             status: 0 on success, else 1
@@ -186,5 +187,3 @@ class ProcessWatcher():
                 break
 
         CloseHandle(hThreadSnapshot)
-
-

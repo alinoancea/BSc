@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import os
-import sys
 import argparse
 import json
 
@@ -52,7 +51,7 @@ def get_experiment(date):
 @bottle.route('/experiment/lastest', method='GET')
 def status_experiment():
     status, response = libweb.get_status_experiment()
-    
+
     bottle.response.content_type = 'application/json'
     return bottle.HTTPResponse(status=status, body=json.dumps({'status': response}))
 
@@ -66,4 +65,3 @@ if __name__ == '__main__':
     argp = args.parse_args()
 
     libweb.start_webapp(argp.interface, argp.port, argp.log_file)
-

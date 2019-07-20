@@ -110,7 +110,7 @@ def execute_experiment(argp):
         if watch_folder:
             watch_folder.close()
         raise
-        
+
 
     logger.close()
     dll_lock.close()
@@ -136,4 +136,3 @@ if __name__ == '__main__':
     argp = args.parse_args()
 
     execute_experiment(argp)
-

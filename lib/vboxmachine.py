@@ -12,7 +12,7 @@ import virtualbox
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/..')
 
-from exception import VBoxLibException
+from exception import VBoxLibException  # NOQA
 
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/..'
 
@@ -50,7 +50,7 @@ class VBoxMachine:
 
         if not os.path.isfile(self.sample_path):
             raise VBoxLibException('Sample [%s] can\'t be found!' % (self.sample_path,))
-        
+
         self.vm.create_session(session=self.session)
         self.session.unlock_machine()
 
@@ -111,7 +111,7 @@ class VBoxMachine:
         Returns:
             process: information about the created process
             stdout: output of the executed command
-            stderr: error messages of the executed command 
+            stderr: error messages of the executed command
         """
         if not cmd or not isinstance(cmd, str):
             raise VBoxLibException('There is no command specified or typeof(cmd) is not "str"')
@@ -162,14 +162,14 @@ class VBoxMachine:
         else:
             destination_file = self.deploy_location + '\\' + destination
 
-            self.__wait_for_operation('__file_copy', '%s[-] Copy [%s] -> [%s]...' % (indentation, source, 
+            self.__wait_for_operation('__file_copy', '%s[-] Copy [%s] -> [%s]...' % (indentation, source,
                     destination_file), self.__file_copy(source, destination_file), show_progress=False)
 
 
     def copy_from_vm(self, source, destination, indent=True):
         destination = os.path.normpath(destination)
         indentation = '\t' if indent else ''
-        self.__wait_for_operation('__file_copy', '%s[-] Extracting [%s] -> [%s]...' % (indentation, source, 
+        self.__wait_for_operation('__file_copy', '%s[-] Extracting [%s] -> [%s]...' % (indentation, source,
                 destination), self.__file_copy(source, destination, to_guest=False), show_progress=False)
 
 
@@ -229,6 +229,3 @@ class VBoxMachine:
         self.__execute_command('launch_client_app', python_path, ['%sclientapp.py' % (tools_dir,)] + args)
 
         self.extract_archive()
-
-
-        

@@ -1,8 +1,8 @@
-from ctypes import c_int, c_bool, c_void_p, c_long, c_short, c_ulong, c_char, c_ushort, c_ubyte, c_long, c_wchar
-from ctypes import windll, byref, Structure, sizeof, POINTER, create_string_buffer, cast, memset
+from ctypes import c_void_p, c_long, c_ulong, c_char, c_ushort, c_ubyte, c_wchar
+from ctypes import windll, Structure, sizeof, POINTER, byref, create_string_buffer, memset, cast    # NOQA
 
 
-### Windows constants
+# Windows constants
 
 HANDLE = c_void_p
 DWORD = c_ulong
@@ -46,7 +46,7 @@ ERROR_NO_MORE_FILES = 0x12
 
 
 
-### Windows structures
+# Windows structures
 
 class STARTUPINFO(Structure):
     _fields_ = [
@@ -119,11 +119,12 @@ class FILE_NOTIFY_INFORMATION(Structure):
         ('FileName',        WCHAR)
     ]
 
+
 PFILE_NOTIFY_INFORMATION = POINTER(FILE_NOTIFY_INFORMATION)
 
 
 
-### Windows function headers
+# Windows function headers
 
 CreateProcess = windll.kernel32.CreateProcessW
 GetLastError = windll.kernel32.GetLastError

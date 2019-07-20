@@ -10,8 +10,8 @@ import bottle
 
 sys.path.append(os.path.dirname(os.path.realpath(__file__)) + '/..')
 
-import lib.vboxmachine as vboxmachine
-from exception import VBoxLibException
+import lib.vboxmachine as vboxmachine   # NOQA
+from exception import VBoxLibException  # NOQA
 
 
 PROJECT_DIR = os.path.dirname(os.path.realpath(__file__)) + '/..'
@@ -139,4 +139,3 @@ def get_experiment_report(report_path):
     rsp.update({'registry': open(os.path.join(report_path, 'logs', 'registry_changes.txt')).read().split('\n')})
 
     return rsp
-
