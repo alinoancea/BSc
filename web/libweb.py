@@ -65,10 +65,10 @@ class ExperimentTask(threading.Thread):
         except VBoxLibException as e:
             try:
                 vbx.power_off()
-            except:
+            except Exception:
                 pass
             self.response = str(e)
-        
+
         self.finish = True
 
 
@@ -95,7 +95,7 @@ def available_reports():
             one_experiment['sample'] = os.path.basename(info['malware'])
 
             results.append(one_experiment)
-        except:
+        except Exception:
             continue
 
     return results

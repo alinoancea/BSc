@@ -20,7 +20,7 @@ def is_valid_path(parser, argument):
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-c', '--config', help='set configuration file with VMs')
-parser.add_argument('-vm', '--vm_name', help='set VM name', 
+parser.add_argument('-vm', '--vm_name', help='set VM name',
         required='--config' not in sys.argv and '-c' not in sys.argv)
 parser.add_argument('-ss', '--snapshot', help='set which snapshot to revert')
 parser.add_argument('-u', '--username', help='set username for VM',
@@ -45,7 +45,7 @@ if __name__ == '__main__':
                         print('[!] Missing VM name from:\n%s' % (json.dumps(e, indent=4),), file=sys.stderr)
                         continue
                     if ('username' not in e or 'password' not in e) and not (args.username and args.password):
-                        print('[!] Missing username/password from:\n%s' % (json.dumps(e, indent=4),), 
+                        print('[!] Missing username/password from:\n%s' % (json.dumps(e, indent=4),),
                                 file=sys.stderr)
                         continue
                     if 'sample' not in e and not args.sample:
@@ -63,7 +63,7 @@ if __name__ == '__main__':
                         'snapshot': e.get('snapshot') or args.snapshot
                     })
             except Exception as e:
-                print('[!] [%s] is not a valid JSON file!\nERROR: %s' % (args.config, str(e)), 
+                print('[!] [%s] is not a valid JSON file!\nERROR: %s' % (args.config, str(e)),
                         file=sys.stderr)
                 sys.exit(-1)
         else:
@@ -90,7 +90,7 @@ if __name__ == '__main__':
         except VBoxLibException as e:
             try:
                 vbx.power_off()
-            except:
+            except Exception:
                 pass
             print(e, file=sys.stderr)
             raise

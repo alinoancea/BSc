@@ -78,7 +78,7 @@ class FolderWatcher(threading.Thread):
                     if (not os.path.isdir(fn)) and fn not in self.results:
                         try:
                             size = '%s bytes' % os.path.getsize(fn)
-                        except:
+                        except Exception:
                             size = 'missing'
                         print('[%s] changed: %s (%s)' % (fn, evt, size), file=self.output)
                         self.results.append(fn)

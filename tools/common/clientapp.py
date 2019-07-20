@@ -102,7 +102,7 @@ def execute_experiment(argp):
             malware_proc.terminate()
         if watch_folder:
             watch_folder.close()
-    except:
+    except Exception:
         if hollows_proc:
             hollows_proc.terminate()
         if malware_proc:

@@ -81,7 +81,7 @@ class VBoxMachine:
         self.console_session = self.session.console
         try:
             self.guest_session = self.console_session.guest.create_session(self.username, self.password)
-        except:
+        except Exception:
             raise VBoxLibException('Username or password are invalid for guest creation!')
 
         _, stdout, _ = self.__execute_command('proc_architecture', 'set|findstr /ic:PROCESSOR_ARCHITECTURE')
